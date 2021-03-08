@@ -1,0 +1,41 @@
+# doing necessary imports
+from flask import Flask, render_template, request
+from bs4 import BeautifulSoup as bs
+from urllib.request import urlopen as uOpen
+from urllib.request import Request
+
+
+# This is the flask object
+app = Flask(__name__)  # initialising the flask app with the name 'app'
+
+# base url + /
+#http://localhost:8000 + /
+@app.route('/',methods=['GET']) # route with allowed methods as GET
+def index():
+    if request.method == 'GET':
+        try:
+            header = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36'}
+            news_url = 'https://economictimes.indiatimes.com/'
+            uClient = uOpen(Request(news_url, headers = header)) # requesting the webpage from the internet
+            newsPage = uClient.read() # reading the webpage
+            uClient.close() # closing the connection to the web server
+            news_html = bs(newsPage, "html.parser") # parsing the webpage as HTML
+            page_content = news_html.findAll('a', {"class": "tle_wrp"}) # searching for appropriate tag to get news titles
+
+            news = [] # initializing an empty list for reviews
+            #  iterating over the comment section to get the news titles
+            for comment in page_content:
+                try:
+                    name = comment.span.text
+                except:
+                    name = 'No Name'
+                mydict = {"Titles": name}
+                news.append(mydict)
+
+            return render_template('results.html', reviews=news)
+        except:
+            return 'something is wrong'
+
+
+if __name__ == "__main__":
+    app.run(port=8000,debug=True) # running the app on the local machine on port 8000
