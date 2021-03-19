@@ -22,6 +22,24 @@ def index():
             collection = "news_titles"
             db_name = 'news_DB'
 
+            # Fetching News Titles & Articles From Web Scraping
+            news_obj = news_scrapped()
+            news = news_obj.news_titl()
+
+            # Storing Raw Scraped News Into MongoDB
+            store = main_functions()
+            store.store_raw_news(json = news, db_name = db_name, collection = collection)
+
+            # Pulling Raw Scrapped News From MongoDb
+            read_news = store.read_raw_news(db_name = db_name, collection = collection)
+
+            return render_template('results.html', news=read_news)
+        except:
+            return 'something is wrong'
+
+if __name__ == "__main__":
+    app.run(port=5000, debug=True)  # running the app on the local machine on port 8000
+
             # mongoClient = MongoDBManagement(username='new_db_123', password='new_db_123')
             # # dbConn = pymongo.MongoClient("mongodb://localhost:27017/")  # opening a connection to Mongo
             #
@@ -32,24 +50,6 @@ def index():
             #     return render_template('results.html', news = news)
             #
             # else:
-            # Fetching News Titles & Articles From Web Scraping
-            news_obj = news_scrapped()
-            news = news_obj.news_titl()
-
-            # String Raw Scraped News into MongoDB
-            store = main_functions()
-            store.store_raw_news(json = news, db_name = db_name, collection = collection)
-
-            #
 
                 # mongoClient.createCollection( collection_name = searchString, db_name = db_name)
                 # mongoClient.insertRecords( db_name = db_name, collection_name = searchString, records = news)
-
-
-            return render_template('results.html', news=news)
-        except:
-            return 'something is wrong'
-
-
-if __name__ == "__main__":
-    app.run(port=5000,debug=True) # running the app on the local machine on port 8000

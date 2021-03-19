@@ -18,8 +18,13 @@ class main_functions():
         # mongoClient.createCollection(collection_name=collection, db_name=db_name)
         # mongoClient.insertRecords(db_name=db_name, collection_name=collection, records=self.json)
 
-    def read_raw_news():
-        return True
+    def read_raw_news(self, db_name, collection):
+        dbConn = pymongo.MongoClient("mongodb://localhost:27017/")
+        db = dbConn[db_name]
+        table = db[collection]
+        response = table.find()
+        result = [i for i in response]
+        return result
 
     def store_news(json):
         return True
