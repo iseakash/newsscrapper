@@ -26,12 +26,23 @@ def index():
             news_obj = news_scrapped()
             news = news_obj.news_titl()
 
-            # Storing Raw Scraped News Into MongoDB
+            # Calling the functionss.py functions
             store = main_functions()
-            store.store_raw_news(json = news, db_name = db_name, collection = collection)
+
+            # Storing Raw Scraped News Into MongoDB
+            store.store_raw_news(db_name = db_name, collection = collection, json = news)
 
             # Pulling Raw Scrapped News From MongoDb
             read_news = store.read_raw_news(db_name = db_name, collection = collection)
+
+            # Cleaning the Database
+            store.clean_database(db_name = db_name, collection = collection)
+
+            # Updating The Mongodb Database With New Cleaned News
+            store.store_news(db_name = db_name, collection = collection, json = news)
+
+            # Pulling Cleaned News From MongoDb
+            store.get_news(db_name = db_name, collection = collection)
 
             return render_template('results.html', news=read_news)
         except:
